@@ -1,0 +1,74 @@
+(function($){
+    $.easytabs = function(container, options){
+        var plugin = this;
+
+        // =============================================================
+        // Functions available via easytabs object
+        // =============================================================
+        plugin.init = function(){
+            alert("init");
+        };
+
+        plugin.setTransitions = function(){};
+
+        plugin.getTabs = function(){};
+
+        plugin.selectTab = function(){};
+
+        plugin.toggleTabCollapse = function(){};
+
+        plugin.matchTab = function(){};
+
+        plugin.matchInPanel = function(){};
+
+        plugin.validId = function(){};
+
+        plugin.selectTabFromHashChange = function(){};
+
+        plugin.cycleTabs = function(){};
+
+        plugin.publicMethods = function(){};
+
+        // =============================================================
+        // Private functions
+        // =============================================================
+
+        var fire = function(){};
+
+        var addClasses = function(){};
+
+        var setDefaultTab = function(){};
+
+        var activateDefaultTab = function(){};
+
+        var bindToTabClicks = function(){};
+
+        var activateTab = function(){};
+
+        var getHeightForHidden = function(){};
+
+        var setAndReturnHeight = function(){};
+
+        var initHashChange = function(){};
+
+        var initCycle = function(){};
+
+        plugin.init();
+    };
+    $.fn.easytabs = function(options){
+        var args = arguments;
+        return this.each(function() {
+            var $this = $(this),
+            plugin = $this.data('easytabs');
+            if(undefined === plugin){
+                plugin = new $.easytabs(this, options);
+                $this.data('easytabs', plugin);
+            }
+
+            // User called public method
+            if ( plugin.publicMethods[options] ){
+                return plugin.publicMethods[options](Array.prototype.slice.call( args, 1 ));
+            }
+        });
+    }
+}(jQuery));
