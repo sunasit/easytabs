@@ -1,12 +1,57 @@
 (function($){
     $.easytabs = function(container, options){
-        var plugin = this;
-
+        var plugin = this,
+        $container = $(container),
+        default = {
+            uiTabs: false,
+            event: "click",
+            tabActiveClass: "",
+            containerClass: "",
+            tabsClass: "",
+            tabClass: "",
+            panelClass: "",
+            collapsible: false,
+            defaultTab: "li:first-child",
+            collapsedByDefault: true,
+            animationSpeed: "Normal"
+        },
+        animationSpeeds = {
+            fast: 200,
+            normal: 400,
+            slow: 600
+        }
         // =============================================================
         // Functions available via easytabs object
         // =============================================================
         plugin.init = function(){
-            alert("init");
+            plugin.settings = settings = $.extend({}, default, options);
+            settings.bind_str = settings.event + ".easytabs";
+            
+            // Add jQuery UI's crazy class names to markup,
+            // so that markup will match theme CSS
+            if(settings.uiTabs){
+                settings.tabActiveClass = 'ui-tabs-selected';
+                settings.containerClass = 'ui-tabs ui-widget ui-widget-content ui-corner-all';
+                settings.tabsClass = 'ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all';
+                settings.tabClass = 'ui-state-default ui-corner-top';
+                settings.panelClass = 'ui-tabs-panel ui-widget-content ui-corner-bottom';
+            }
+            
+            // If collapsible is true and defaultTab specified, assume user wants defaultTab showing (not collapsed)
+            if ( settings.collapsible && options.defaultTab !== undefined && options.collapsedByDefault === undefined ) {
+                settings.collapsedByDefault = false;
+            }
+            
+            // Convert 'normal', 'fast', and 'slow' animation speed settings to their respective speed in milliseconds
+            if(typeof settings.animationSpeed === "string"){
+                setting.animationSpeed = animationSpeeds[settings.animationSpeed];
+            }
+            
+            // Store easytabs object on container so we can easily set
+            // properties throughout
+            $container.data("easytabs", {});
+            
+            plugin.setTransitions();
         };
 
         plugin.setTransitions = function(){};
