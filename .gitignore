@@ -13,7 +13,9 @@
             collapsible: false,
             defaultTab: "li:first-child",
             collapsedByDefault: true,
-            animationSpeed: "Normal"
+            animationSpeed: "Normal"，
+            tabs: "> ul > li",
+            panelContext: $container
         },
         animationSpeeds = {
             fast: 200,
@@ -56,13 +58,64 @@
 
         plugin.setTransitions = function(){};
 
-        plugin.getTabs = function(){};
+        plugin.getTabs = function(){
+            //声明一个变量用于匹配tab的target
+            var $matchingPanel;
+            //$(elem).find("> ul > li")
+            plugin.tabs = $container.find(settings.tabs),
+            //遍历tab
+            plugin.tabs.each(function(){
+                //查找每个tab中a标签的href
+                var $tab = $(this),
+                    $a = $tab.children('a'),
+                    targetId = $tab.children('a').data('target');
+                
+                $tab.data('easytabs', {});
+                if ( targetId !== undefined && targetId !== null ) {
+                    $tab.data('easytabs').ajax = $a.attr('href');
+                } else {
+                    targetId = $a.attr('href');
+                }
+                //正则匹配，查找匹配的target panel元素
+                targetId = targetId.match(/#([^\?]+)/)[1];
+                $matchingPanel = settings.panelContext.find("#" + targetId);
+                
+                if ( $matchingPanel.length ) {
+
+                    // Store panel height before hiding
+                    $matchingPanel.data('easytabs', {
+                        position: $matchingPanel.css('position'),
+                        visibility: $matchingPanel.css('visibility')
+                    });
+
+                    // Don't hide panel if it's active (allows `getTabs` to be called manually to re-instantiate tab collection)
+                    $matchingPanel.not(settings.panelActiveClass).hide();
+                    plugin.panels = plugin.panels.add($matchingPanel);
+                    $tab.data('easytabs').panel = $matchingPanel;
+                    // Otherwise, remove tab from tabs collection
+                } else {
+                    plugin.tabs = plugin.tabs.not($tab);
+                    if ('console' in window) {
+                        console.warn('Warning: tab without matching panel for selector \'#' + targetId +'\' removed from set');
+                    }
+                }
+            });
+        });
+        
+        
+        
+        // Don't hide panel if it's active (allows `getTabs` to be called manually to re-instantiate tab collection)
+        
+        // Otherwise, remove tab from tabs collection
+        };
 
         plugin.selectTab = function(){};
 
         plugin.toggleTabCollapse = function(){};
 
-        plugin.matchTab = function(){};
+        plugin.matchTab = function(hash){
+            return plugin.tabs.find("[href='" + hash + "'],[data-target='" + hash + "']").first();
+        };
 
         plugin.matchInPanel = function(){};
 
