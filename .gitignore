@@ -15,13 +15,16 @@
             collapsedByDefault: true,
             animationSpeed: "Normal"，
             tabs: "> ul > li",
-            panelContext: $container
+            panelContext: $container,
+            cycle: false
         },
         animationSpeeds = {
             fast: 200,
             normal: 400,
             slow: 600
-        }
+        },
+        $defaultTab, //default selected tab
+        settings;
         // =============================================================
         // Functions available via easytabs object
         // =============================================================
@@ -76,7 +79,7 @@
                 } else {
                     targetId = $a.attr('href');
                 }
-                //正则匹配，查找匹配的target panel元素
+                //正则匹配，查找匹配的target panel元素，匹配包括#，不包括？的全部字串
                 targetId = targetId.match(/#([^\?]+)/)[1];
                 $matchingPanel = settings.panelContext.find("#" + targetId);
                 
@@ -117,7 +120,10 @@
             return plugin.tabs.find("[href='" + hash + "'],[data-target='" + hash + "']").first();
         };
 
-        plugin.matchInPanel = function(){};
+        plugin.matchInPanel = function(hash){
+            //校验window.location.hash，并返回匹配的panel
+            return ( hash && plugin.validId(hash) ? plugin.panels.filter(':has(' + hash + ')').first() : [] );
+        };
 
         plugin.validId = function(){};
 
@@ -133,9 +139,33 @@
 
         var fire = function(){};
 
-        var addClasses = function(){};
+        //给tabs/tab/panel/container添加class，init方法调用
+        var addClasses = function(){
+            $container.addClass(settings.containerClass);
+            plugin.tabs.parent().addClass(settings.tabsClass);
+            plugin.tabs.addClass(settings.tabClass);
+            plugin.panels.addClass(settings.panelClass);
+        };
 
-        var setDefaultTab = function(){};
+        var setDefaultTab = function(){
+            //从javascript的内置对象location的hash中匹配参数,hash存放的是url中#后面的内容，即锚
+            var hash = window.location.hash.match(/^[^\?]*/)[0],
+            //调用match方法定位到参数所在的tab
+            $selectedTab = plugin.matchTab(hash).parent(),
+            $panel;
+            
+            if( $selectedTab.length === 1 ){
+                $defaultTab = $selectedTab;
+                settings.cycle = false;
+            }else{
+                $panel = plugin.matchInPanel(hash);
+                if($panel.length){
+                    hash = '#' + $panel.attr('id');
+                }else{
+                
+                }
+            }
+        };
 
         var activateDefaultTab = function(){};
 
